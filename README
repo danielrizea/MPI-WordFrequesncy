@@ -1,0 +1,92 @@
+Rizea Daniel-Octavian
+341C1
+
+
+				Tema 2 -MPI- 
+
+
+Rezolvare:
+
+
+	Trebuie sa exista fisierul config.in, din care programul citeste numarul de mapperi , respectivi reduceri pe primele doua linii din fisier, fisierul de intrare(linia 3) si fisierul de iesire (linia 4).
+	Se porneste cu comanda time mpirun -np 1 ./master 
+	
+	Trebuie introdus fisierul de intrare (cel analizat) si fisierul de iesire, unde se doresc printate rezultatele.
+
+	Se porneste 1 proces principal master care va face spawn dinamic la procesele mapperi si va trimite prin argumente cati reduceri trebuie sa aibe ficare maper. si numele fisierului de intrare.La randul lor, fiecare mapper porneste cati reduceri are.
+	
+	Pentru implementare am utilizat un hashtable (hashmap) care sa retina cuvintele respective si cate aparitii au in text.(Am ales aceasta implementare pentru viteza).
+
+	Procesul:
+
+		Fiecare mapper citeste portiunea sa de fisier si imparte aceasta in chunck-uri si le distribuie reducerilor.
+		Fiecare reducer analizeaza portiunea sa, contruieste hashtabelul, dupa care il distribuie Mapperilor (parintilor).Se transmit cate 100 cuvinte o data pentru a minmiza overheadul de comunicatie.(Este definita o structura speciala pe nume Entry pentru acest lucru, gasite in utils.h).
+		Fiecare Mapper asteapta raspunsul de la reduceri , isi construieste hashtabelul agregat dupa care il trimite mai departe la master.
+		Masterul imbina informatia de la mapperi, o sorteaza dupa frecventa dupa care o printeaza in fisierul de iesire.
+
+		Nu ma tinut cont de cuvintele care se pot pierd cad se face imartirea textului.
+	
+		Observatii prin efectuarea de spawn dinamic apare un overhead in aplicatie ce poate dauna performantelor. ex cazul 2 4 fata de 4 10 (timpul petrecut in regiunea sys este considerabil mai mare)
+			
+
+		In arhiva se gaeste si fisierul de configurare config.in , testfile.txt care este textul dat ca exemplu, makefile pentru compilare si script pentru rulare pe fep script.sh
+Masuratori :
+2 4
+real	0m4.949s
+user	0m14.308s
+sys	0m8.868s
+
+2 6
+real	0m5.901s
+user	0m19.533s
+sys	0m11.679s
+
+2 8 
+real	0m10.991s
+user	0m45.180s
+sys	0m26.591s
+
+2 10
+real	0m12.580s
+user	0m52.667s
+sys	0m31.864s
+
+3 4
+real	0m7.918s
+user	0m30.329s
+sys	0m18.051s
+
+3 6
+real	0m13.435s
+user	0m57.811s
+sys	0m34.225s
+
+3 8 
+real	0m17.808s
+user	1m19.247s
+sys	0m46.910s
+
+3 10
+real	0m20.583s
+user	1m33.264s
+sys	0m54.918s
+
+4 4
+real	0m9.820s
+user	0m40.173s
+sys	0m24.356s
+
+4 6
+real	0m17.351s
+user	1m18.343s
+sys	0m46.633s
+
+4 8 
+real	0m19.060s
+user	1m26.860s
+sys	0m51.647s
+
+4 10
+real	0m29.405s
+user	2m17.669s
+sys	1m21.733s
